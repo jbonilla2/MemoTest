@@ -1,107 +1,126 @@
 package com.example.memo;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.EditText;
-import android.widget.Toast;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.util.List;
+
 
 public class MainActivity extends AppCompatActivity {
-
-    EditText EditText1;
+    private ListView listView;
+    private Button btnAdd;
+    private DBAccess databaseAccess;
+    private List<Memo> memos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        EditText1 = findViewById(R.id.EditText1);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        this.databaseAccess = DBAccess.getInstance(this);
+
+        this.listView = (ListView) findViewById(R.id.listView);
+        this.btnAdd = (Button) findViewById(R.id.btnAdd);
+
+        this.btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Memo saved!", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                Save("Note1.txt");
+            public void onClick(View v) {
+                onAddClicked();
             }
         });
-        //Save("EditText1");
-        EditText1.setText(Open("Note1.txt"));
-    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    public void Save(String fileName) {
-        try {
-            OutputStreamWriter out =
-                    new OutputStreamWriter(openFileOutput(fileName, 0));
-            out.write(EditText1.getText().toString());
-            out.close();
-            Toast.makeText(this, "Memo Saved!", Toast.LENGTH_SHORT).show();
-        } catch (Throwable t) {
-            Toast.makeText(this, "Exception: " + t.toString(), Toast.LENGTH_LONG).show();
-        }
-    }
-
-    public String Open(String fileName) {
-        String content = "";
-        if (FileExists(fileName)) {
-            try {
-                InputStream in = openFileInput(fileName);
-                if ( in != null) {
-                    InputStreamReader tmp = new InputStreamReader( in );
-                    BufferedReader reader = new BufferedReader(tmp);
-                    String str;
-                    StringBuilder buf = new StringBuilder();
-                    while ((str = reader.readLine()) != null) {
-                        buf.append(str + "\n");
-                    } in .close();
-                    content = buf.toString();
+        this.listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Memo memo = memos.get(position);
+                TextView txtMemo = (TextView) view.findViewById(R.id.txtMemo);
+                if (memo.isFullDisplayed()) {
+                    txtMemo.setText(memo.getShortText());
+                    memo.setFullDisplayed(false);
+                } else {
+                    txtMemo.setText(memo.getText());
+                    memo.setFullDisplayed(true);
                 }
-            } catch (java.io.FileNotFoundException e) {} catch (Throwable t) {
-                Toast.makeText(this, "Exception: " + t.toString(), Toast.LENGTH_LONG).show();
             }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        databaseAccess.open();
+        this.memos = databaseAccess.getAllMemos();
+        databaseAccess.close();
+        MemoAdapter adapter = new MemoAdapter(this, memos);
+        this.listView.setAdapter(adapter);
+    }
+
+    public void onAddClicked() {
+        Intent intent = new Intent(this, EditActivity.class);
+        startActivity(intent);
+    }
+
+    public void onDeleteClicked(Memo memo) {
+        databaseAccess.open();
+        databaseAccess.delete(memo);
+        databaseAccess.close();
+
+        ArrayAdapter<Memo> adapter = (ArrayAdapter<Memo>) listView.getAdapter();
+        adapter.remove(memo);
+        adapter.notifyDataSetChanged();
+    }
+
+    public void onEditClicked(Memo memo) {
+        Intent intent = new Intent(this, EditActivity.class);
+        intent.putExtra("MEMO", memo);
+        startActivity(intent);
+    }
+
+    private class MemoAdapter extends ArrayAdapter<Memo> {
+
+
+        public MemoAdapter(Context context, List<Memo> objects) {
+            super(context, 0, objects);
         }
-        return content;
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = getLayoutInflater().inflate(R.layout.layout_list_item, parent, false);
+            }
+
+            ImageView btnEdit = (ImageView) convertView.findViewById(R.id.btnEdit);
+            ImageView btnDelete = (ImageView) convertView.findViewById(R.id.btnDelete);
+            TextView txtDate = (TextView) convertView.findViewById(R.id.txtDate);
+            TextView txtMemo = (TextView) convertView.findViewById(R.id.txtMemo);
+
+            final Memo memo = memos.get(position);
+            memo.setFullDisplayed(false);
+            txtDate.setText(memo.getDate());
+            txtMemo.setText(memo.getShortText());
+            btnEdit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onEditClicked(memo);
+                }
+            });
+            btnDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onDeleteClicked(memo);
+                }
+            });
+            return convertView;
+        }
     }
-
-    public boolean FileExists(String fname){
-        File file = getBaseContext().getFileStreamPath(fname);
-        return file.exists();
-    }
-
-
 }
