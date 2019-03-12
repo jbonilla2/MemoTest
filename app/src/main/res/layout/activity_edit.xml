@@ -9,13 +9,53 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.memo.EditActivity">
 
+    <RadioGroup
+        android:layout_width="325dp"
+        android:layout_height="42dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="clip_vertical"
+        android:layout_marginStart="70dp"
+        android:layout_marginLeft="70dp"
+        android:layout_marginTop="617dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginRight="0dp"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radioButton5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="!" />
+
+        <RadioButton
+            android:id="@+id/radioButton9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="!!" />
+
+        <RadioButton
+            android:id="@+id/radioButton10"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="!!!" />
+
+    </RadioGroup>
+
+
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:orientation="horizontal">
+
+        >
 
         <Button
             android:id="@+id/btnSave"
@@ -35,10 +75,11 @@
     </LinearLayout>
 
     <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="395dp"
+        android:layout_height="600dp"
         android:layout_above="@id/linearLayout"
         android:layout_alignParentTop="true"
+        android:layout_marginBottom="51dp"
         android:fillViewport="true">
 
         <EditText
@@ -47,4 +88,17 @@
             android:layout_height="match_parent"
             android:gravity="top|left" />
     </ScrollView>
+
+    <ScrollView
+        android:layout_width="395dp"
+        android:layout_height="598dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="117dp"
+        android:fillViewport="true" />
+
+
+
+
 </RelativeLayout>
