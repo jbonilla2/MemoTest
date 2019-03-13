@@ -94,11 +94,12 @@ public class DBAccess {
 
 
 
-    public boolean delete(int MemoId) {
+    public boolean delete(Memo memo) {
         boolean didDelete = false;
 
         try {
-            didDelete = database.delete("memo", "_id=" + MemoId, null) > 0;
+            Long memoId = (long) memo.getMemoId();
+            didDelete = database.delete("memo", "_id=" + memoId, null) > 0;
         }
         catch (Exception e) {
             //Do nothing -return value already set to false

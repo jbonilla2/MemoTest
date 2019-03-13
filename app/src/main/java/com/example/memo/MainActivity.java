@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -25,9 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView listView;
     private Button btnAdd;
     private DBAccess databaseAccess;
-    boolean isDeleting = false;
-    private List<Memo> memos;
-    MemoAdapter adapter;
+    private ArrayList<Memo> memos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,24 +43,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        this.listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Memo memo = memos.get(position);
-                TextView txtMemo = (TextView) view.findViewById(R.id.txtMemo);
-                if (memo.isFullDisplayed()) {
-                    txtMemo.setText(memo.getShortText());
-                    memo.setFullDisplayed(false);
-                } else {
-                    txtMemo.setText(memo.getText());
-                    memo.setFullDisplayed(true);
-                }
-            }
-        });
-
         initSettings();
         initSortByClick();
-
     }
 
     private void initSettings() {
@@ -106,16 +87,46 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             databaseAccess.open();
-            memos = databaseAccess.getMemos(sortBy);
+            this.memos = databaseAccess.getMemos(sortBy);
             databaseAccess.close();
+
             MemoAdapter adapter = new MemoAdapter(this, memos);
-            ListView listView = (ListView) findViewById(R.id.lvMemos);
-            listView.setAdapter(adapter);listView.setAdapter(adapter);
+            //ListView listView = (ListView) findViewById(R.id.lvMemos);
             this.listView.setAdapter(adapter);
+
         }
         catch (Exception e) {
             Toast.makeText(this, "Error retrieving memos", Toast.LENGTH_LONG).show();
         }
+
+        if (memos.size() > 0) {
+
+            this.listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    Memo memo = memos.get(position);
+                    TextView txtMemo = (TextView) view.findViewById(R.id.txtMemo);
+                    TextView txtDate = (TextView) view.findViewById(R.id.txtDate);
+
+                    if (memo.isFullDisplayed()) {
+
+                        txtMemo.setText(memo.getShortText());
+                        txtDate.setText(memo.getDate());
+                        memo.setFullDisplayed(false);
+
+                    } else {
+
+                        txtMemo.setText(memo.getText());
+                        txtDate.setText(memo.getDate());
+                        memo.setFullDisplayed(true);
+
+
+                    }
+                }
+            });
+        }
+
     }
 
     public void onAddClicked() {
@@ -124,23 +135,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onDeleteClicked(Memo memo) {
+        databaseAccess.open();
+        databaseAccess.delete(memo);
+        databaseAccess.close();
 
-        final ImageView deleteButton = (ImageView) findViewById(R.id.btnDelete);
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (isDeleting) {
-                    isDeleting = false;
-                    adapter.notifyDataSetChanged();
-                }
-                else {
-                    isDeleting = true;
-                }
-            }
-        });
-
+        ArrayAdapter<Memo> adapter = (ArrayAdapter<Memo>) listView.getAdapter();
+        adapter.remove(memo);
+        adapter.notifyDataSetChanged();
     }
 
     public void onEditClicked(Memo memo) {
+        databaseAccess.open();
+        databaseAccess.updateMemo(memo);
+        databaseAccess.close();
+
         Intent intent = new Intent(this, EditActivity.class);
         intent.putExtra("MEMO", memo);
         startActivity(intent);
@@ -150,11 +158,13 @@ public class MainActivity extends AppCompatActivity {
 
 
         public MemoAdapter(Context context, List<Memo> objects) {
+
             super(context, 0, objects);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+
             if (convertView == null) {
                 convertView = getLayoutInflater().inflate(R.layout.layout_list_item, parent, false);
             }
@@ -165,6 +175,7 @@ public class MainActivity extends AppCompatActivity {
             TextView txtMemo = (TextView) convertView.findViewById(R.id.txtMemo);
 
             final Memo memo = memos.get(position);
+
             memo.setFullDisplayed(false);
             txtDate.setText(memo.getDate());
             txtMemo.setText(memo.getShortText());
@@ -174,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
                     onEditClicked(memo);
                 }
             });
+
             btnDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
