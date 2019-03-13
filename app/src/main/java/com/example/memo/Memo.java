@@ -3,33 +3,59 @@ package com.example.memo;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class Memo implements Serializable {
-    private Date date;
+
+    private int memoId;
+    private String date;
     private String text;
+    private String importance;
     private boolean fullDisplayed;
-    private static DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyy 'at' hh:mm aaa");
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyy hh:mm:ss a");
+
+    Calendar calendar;
+    String dateStr;
 
     public Memo() {
-        this.date = new Date();
+
     }
 
-    public Memo(long time, String text) {
-        this.date = new Date(time);
+
+    public Memo(String text, String importance) {
+
         this.text = text;
+        this.importance = importance;
+
+        calendar = Calendar.getInstance();
+        dateStr = dateFormat.format(calendar.getTime());
+
+    }
+
+
+    public int getMemoId() {
+        return memoId;
+    }
+
+    public void setMemoId(int memoId) {
+        this.memoId = memoId;
+    }
+
+    public String getImportance() {
+        return importance;
+    }
+
+    public void setImportance(String importance) {
+        this.importance = importance;
+    }
+
+    public void setDate(String dateStr) {
+        this.dateStr = dateStr;
     }
 
     public String getDate() {
-        return dateFormat.format(date);
-    }
-
-    public long getTime() {
-        return date.getTime();
-    }
-
-    public void setTime(long time) {
-        this.date = new Date(time);
+        return dateStr;
     }
 
     public void setText(String text) {

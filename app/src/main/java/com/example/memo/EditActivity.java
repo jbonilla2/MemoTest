@@ -1,6 +1,7 @@
 package com.example.memo;
 
 import android.*;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -8,7 +9,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 
 public class EditActivity extends AppCompatActivity {
@@ -56,15 +58,17 @@ public class EditActivity extends AppCompatActivity {
             // Add new memo
             Memo temp = new Memo();
             temp.setText(etText.getText().toString());
-            databaseAccess.save(temp);
+            databaseAccess.insertMemo(temp);
         } else {
             // Update the memo
             memo.setText(etText.getText().toString());
-            databaseAccess.update(memo);
+            databaseAccess.updateMemo(memo);
         }
         databaseAccess.close();
         this.finish();
     }
+
+
 
     public void onCancelClicked() {
         this.finish();

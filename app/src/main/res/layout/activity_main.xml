@@ -25,38 +25,34 @@
             android:background="@android:color/holo_blue_dark"
             android:text="New Memo" />
 
-        <Button
-            android:id="@+id/btnImportance"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="118dp"
+        <RadioGroup
+            android:id="@+id/radioGroupSort"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
+            android:layout_toRightOf="@+id/btnAdd"
+            android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radioImp"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:layout_marginEnd="6dp"
-            android:layout_marginRight="6dp"
             android:background="@android:color/background_light"
             android:text="Importance"
             android:textAppearance="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
             android:textColor="@android:color/holo_blue_dark" />
 
-        <Button
-            android:id="@+id/btnDate"
+        <RadioButton
+            android:id="@+id/radioDate"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="118dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginStart="147dp"
-            android:layout_marginLeft="147dp"
-            android:layout_marginEnd="134dp"
-            android:layout_marginRight="134dp"
+            android:layout_marginTop="4dp"
             android:background="@android:color/background_light"
             android:text="Date"
             android:textColor="@android:color/holo_blue_dark" />
+        </RadioGroup>
 
         <View
             android:layout_width="match_parent"
@@ -66,7 +62,7 @@
     </RelativeLayout>
 
     <ListView
-        android:id="@+id/listView"
+        android:id="@+id/lvMemos"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/layoutBottom"

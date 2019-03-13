@@ -9,10 +9,15 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -20,7 +25,9 @@ public class MainActivity extends AppCompatActivity {
     private ListView listView;
     private Button btnAdd;
     private DBAccess databaseAccess;
+    boolean isDeleting = false;
     private List<Memo> memos;
+    MemoAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
         this.databaseAccess = DBAccess.getInstance(this);
 
-        this.listView = (ListView) findViewById(R.id.listView);
+        this.listView = (ListView) findViewById(R.id.lvMemos);
         this.btnAdd = (Button) findViewById(R.id.btnAdd);
 
         this.btnAdd.setOnClickListener(new View.OnClickListener() {
@@ -53,16 +60,62 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        initSettings();
+        initSortByClick();
+
+    }
+
+    private void initSettings() {
+        String sortBy = getSharedPreferences("Memo", Context.MODE_PRIVATE).getString("sortfield","date");
+
+        RadioButton rbDate = (RadioButton) findViewById(R.id.radioDate);
+        RadioButton rbImp = (RadioButton) findViewById(R.id.radioImp);
+
+        if (sortBy.equalsIgnoreCase("date")) {
+            rbDate.setChecked(true);
+        }
+        else {
+            rbImp.setChecked(true);
+        }
+    }
+
+    private void initSortByClick() {
+        RadioGroup rgSortBy = (RadioGroup) findViewById(R.id.radioGroupSort);
+        rgSortBy.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(RadioGroup arg0, int arg1) {
+                RadioButton rbDate = (RadioButton) findViewById(R.id.radioDate);
+                RadioButton rbImp = (RadioButton) findViewById(R.id.radioImp);
+                if (rbDate.isChecked()) {
+                    getSharedPreferences("Memo", Context.MODE_PRIVATE).edit() .putString("sortfield", "date").commit();
+                }
+                else {
+                    getSharedPreferences("Memo", Context.MODE_PRIVATE).edit().putString("sortfield", "importance").commit();
+                }
+            }
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        databaseAccess.open();
-        this.memos = databaseAccess.getAllMemos();
-        databaseAccess.close();
-        MemoAdapter adapter = new MemoAdapter(this, memos);
-        this.listView.setAdapter(adapter);
+
+        String sortBy = getSharedPreferences("Memo", Context.MODE_PRIVATE).getString("sortfield","memo");
+
+        try {
+            databaseAccess.open();
+            memos = databaseAccess.getMemos(sortBy);
+            databaseAccess.close();
+            MemoAdapter adapter = new MemoAdapter(this, memos);
+            ListView listView = (ListView) findViewById(R.id.lvMemos);
+            listView.setAdapter(adapter);listView.setAdapter(adapter);
+            this.listView.setAdapter(adapter);
+        }
+        catch (Exception e) {
+            Toast.makeText(this, "Error retrieving memos", Toast.LENGTH_LONG).show();
+        }
     }
 
     public void onAddClicked() {
@@ -71,13 +124,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onDeleteClicked(Memo memo) {
-        databaseAccess.open();
-        databaseAccess.delete(memo);
-        databaseAccess.close();
 
-        ArrayAdapter<Memo> adapter = (ArrayAdapter<Memo>) listView.getAdapter();
-        adapter.remove(memo);
-        adapter.notifyDataSetChanged();
+        final ImageView deleteButton = (ImageView) findViewById(R.id.btnDelete);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (isDeleting) {
+                    isDeleting = false;
+                    adapter.notifyDataSetChanged();
+                }
+                else {
+                    isDeleting = true;
+                }
+            }
+        });
+
     }
 
     public void onEditClicked(Memo memo) {
