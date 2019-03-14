@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView listView;
     private Button btnAdd;
     private DBAccess databaseAccess;
-    boolean isDeleting = false;
+    /*boolean isDeleting = false;*/
     private List<Memo> memos;
     MemoAdapter adapter;
 
@@ -36,8 +36,8 @@ public class MainActivity extends AppCompatActivity {
 
         this.databaseAccess = DBAccess.getInstance(this);
 
-        this.listView = (ListView) findViewById(R.id.lvMemos);
-        this.btnAdd = (Button) findViewById(R.id.btnAdd);
+        this.listView = findViewById(R.id.listView);
+        this.btnAdd = findViewById(R.id.btnAdd);
 
         this.btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,11 +61,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        initSettings();
-        initSortByClick();
+        /*initSettings();
+        initSortByClick();*/
 
     }
-
+    /*
     private void initSettings() {
         String sortBy = getSharedPreferences("Memo", Context.MODE_PRIVATE).getString("sortfield","date");
 
@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    */
 
     @Override
     protected void onResume() {
@@ -106,11 +107,11 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             databaseAccess.open();
-            memos = databaseAccess.getMemos(sortBy);
+            this.memos = databaseAccess.getAllMemos();
             databaseAccess.close();
             MemoAdapter adapter = new MemoAdapter(this, memos);
-            ListView listView = (ListView) findViewById(R.id.lvMemos);
-            listView.setAdapter(adapter);listView.setAdapter(adapter);
+            /*ListView listView = (ListView) findViewById(R.id.listView);
+            /*listView.setAdapter(adapter);listView.setAdapter(adapter);*/
             this.listView.setAdapter(adapter);
         }
         catch (Exception e) {
@@ -123,27 +124,21 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void onDeleteClicked(Memo memo) {
-
-        final ImageView deleteButton = (ImageView) findViewById(R.id.btnDelete);
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (isDeleting) {
-                    isDeleting = false;
-                    adapter.notifyDataSetChanged();
-                }
-                else {
-                    isDeleting = true;
-                }
-            }
-        });
-
-    }
 
     public void onEditClicked(Memo memo) {
         Intent intent = new Intent(this, EditActivity.class);
         intent.putExtra("MEMO", memo);
         startActivity(intent);
+    }
+
+    public void onDeleteClicked(Memo memo) {
+        databaseAccess.open();
+        databaseAccess.delete(memo);
+        databaseAccess.close();
+
+        ArrayAdapter<Memo> adapter = (ArrayAdapter<Memo>) listView.getAdapter();
+        adapter.remove(memo);
+        adapter.notifyDataSetChanged();
     }
 
     private class MemoAdapter extends ArrayAdapter<Memo> {

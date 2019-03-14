@@ -58,14 +58,18 @@ public class EditActivity extends AppCompatActivity {
             // Add new memo
             Memo temp = new Memo();
             temp.setText(etText.getText().toString());
-            databaseAccess.insertMemo(temp);
+            databaseAccess.save(temp);
         } else {
             // Update the memo
             memo.setText(etText.getText().toString());
-            databaseAccess.updateMemo(memo);
+            databaseAccess.update(memo);
         }
         databaseAccess.close();
         this.finish();
+    }
+
+    public void initSortByPriorityButton() {
+
     }
 
 

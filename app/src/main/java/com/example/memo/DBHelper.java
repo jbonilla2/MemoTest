@@ -10,15 +10,16 @@ class DBHelper extends SQLiteOpenHelper {
     public static final int VERSION = 1;
 
     public DBHelper(Context context) {
+
         super(context, DATABASE, null, VERSION);
     }
 
-    private static final String CREATE_TABLE_MEMO =
+    /*private static final String CREATE_TABLE_MEMO =
             "create table memo (_id integer primary key autoincrement, date date, memo text, importance integer );";
-
+     */
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(CREATE_TABLE_MEMO);
+        db.execSQL("CREATE TABLE memo(date INTEGER PRIMARY KEY, memo TEXT);");
         //db.execSQL("CREATE TABLE memo(date integer PRIMARY KEY, memo text, importance integer);");
     }
 

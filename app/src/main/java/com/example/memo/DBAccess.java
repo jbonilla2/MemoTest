@@ -38,17 +38,17 @@ public class DBAccess {
         }
     }
 
-    /*
+
     public void save(Memo memo) {
         ContentValues values = new ContentValues();
         values.put("date", memo.getTime());
         values.put("memo", memo.getText());
-        values.put("importance", memo.getImportance());
+        /*values.put("importance", memo.getImportance());*/
         database.insert(DBHelper.TABLE, null, values);
     }
-    */
 
-    public boolean insertMemo(Memo memo) {
+
+    /*public boolean insertMemo(Memo memo) {
         boolean didSucceed = false;
         try {
             ContentValues values = new ContentValues();
@@ -72,6 +72,7 @@ public class DBAccess {
         return didSucceed;
     }
 
+
     public boolean updateMemo(Memo memo) {
         boolean didSucceedUpdate = false;
 
@@ -91,10 +92,18 @@ public class DBAccess {
 
         return didSucceedUpdate;
     }
+    */
+    public void update(Memo memo) {
+        ContentValues values = new ContentValues();
+        values.put("date", new Date().getTime());
+        values.put("memo", memo.getText());
+        String date = Long.toString(memo.getTime());
+        database.update(DBHelper.TABLE, values, "date = ?", new String[]{date});
+    }
 
 
 
-    public boolean delete(int MemoId) {
+   /*public boolean delete(int MemoId) {
         boolean didDelete = false;
 
         try {
@@ -104,9 +113,13 @@ public class DBAccess {
             //Do nothing -return value already set to false
         }
         return didDelete;
-    }
+    }*/
+   public void delete(Memo memo) {
+       String date = Long.toString(memo.getTime());
+       database.delete(DBHelper.TABLE, "date = ?", new String[]{date});
+   }
 
-    /*
+
     public List getAllMemos() {
         List memos = new ArrayList<>();
         Cursor cursor = database.rawQuery("SELECT * From memo ORDER BY date DESC", null);
@@ -120,9 +133,9 @@ public class DBAccess {
         cursor.close();
         return memos;
     }
-   */
 
-    public ArrayList<Memo> getMemos(String sortField) {
+
+   /* public ArrayList<Memo> getMemos(String sortField) {
         ArrayList<Memo> memos = new ArrayList<Memo>();
         try {
             String query = "SELECT  * FROM memo ORDER BY " + sortField;
@@ -147,6 +160,6 @@ public class DBAccess {
             memos = new ArrayList<Memo>();
         }
         return memos;
-    }
+    } */
 
 }

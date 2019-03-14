@@ -9,27 +9,27 @@ import java.util.Date;
 public class Memo implements Serializable {
 
     private int memoId;
-    private String date;
+    private Date date;
     private String text;
     private String importance;
     private boolean fullDisplayed;
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyy hh:mm:ss a");
+    private static DateFormat dateFormat = new SimpleDateFormat("MM-dd-yyy hh:mm:ss a");
 
     Calendar calendar;
     String dateStr;
 
     public Memo() {
+        this.date = new Date();
 
     }
 
 
-    public Memo(String text, String importance) {
-
-        this.text = text;
-        this.importance = importance;
-
-        calendar = Calendar.getInstance();
-        dateStr = dateFormat.format(calendar.getTime());
+    public Memo(long time, String text) {
+        this.date = new Date(time);
+        /*this.importance = importance;*/
+        this.text=text;
+        /*calendar = Calendar.getInstance();*/
+        /*dateStr = dateFormat.format(calendar.getTime());*/
 
     }
 
@@ -50,12 +50,16 @@ public class Memo implements Serializable {
         this.importance = importance;
     }
 
-    public void setDate(String dateStr) {
-        this.dateStr = dateStr;
+    public long getTime() {
+        return date.getTime();
+    }
+
+    public void setTime(long time) {
+        this.date = new Date(time);
     }
 
     public String getDate() {
-        return dateStr;
+        return dateFormat.format(date);
     }
 
     public void setText(String text) {

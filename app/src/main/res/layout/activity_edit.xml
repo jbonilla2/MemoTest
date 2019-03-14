@@ -36,8 +36,8 @@
             android:layout_height="match_parent"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:orientation="horizontal"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
 
             <RadioButton
                 android:id="@+id/radioHigh"
@@ -45,24 +45,24 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
                 android:layout_weight="1"
-                android:textSize="@dimen/text_size_medium"
-                android:text="High" />
+                android:text="High"
+                android:textSize="@dimen/text_size_medium" />
 
             <RadioButton
                 android:id="@+id/radioMed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textSize="@dimen/text_size_medium"
-                android:text="Med" />
+                android:text="Med"
+                android:textSize="@dimen/text_size_medium" />
 
             <RadioButton
                 android:id="@+id/radioLow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textSize="@dimen/text_size_medium"
-                android:text="Low" />
+                android:text="Low"
+                android:textSize="@dimen/text_size_medium" />
         </RadioGroup>
 
     </RelativeLayout>
