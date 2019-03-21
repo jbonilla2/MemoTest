@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Memo memo = memos.get(position);
-                TextView txtMemo = (TextView) view.findViewById(R.id.txtMemo);
+                TextView txtMemo = view.findViewById(R.id.txtMemo);
                 if (memo.isFullDisplayed()) {
                     txtMemo.setText(memo.getShortText());
                     memo.setFullDisplayed(false);
@@ -117,6 +117,10 @@ public class MainActivity extends AppCompatActivity {
         catch (Exception e) {
             Toast.makeText(this, "Error retrieving memos", Toast.LENGTH_LONG).show();
         }
+    }
+
+    public void onImportanceClicked() {
+        /* CLICKING THIS BUTTON SHOULD TRIGGER THE initSortBy METHOD */
     }
 
     public void onAddClicked() {

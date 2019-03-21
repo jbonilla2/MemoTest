@@ -48,10 +48,12 @@ public class EditActivity extends AppCompatActivity {
             }
         }
 
+
         this.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onSaveClicked();
+
             }
         });
 
@@ -61,6 +63,9 @@ public class EditActivity extends AppCompatActivity {
                 onCancelClicked();
             }
         });
+        initSortBy();
+        initSortByClick();
+
 
        /*
         intent = getIntent();
@@ -112,11 +117,46 @@ public class EditActivity extends AppCompatActivity {
 
     }
 
-    public void initSortByPriorityButton() {
+    /* CLICKING THE IMPORTANCE BUTTON SHOULD TRIGGER THIS METHOD */
+    /* This method saves and displays the user's (current) preferences */
+    private void initSortBy() {
+        String sortBy = getSharedPreferences("MyMemoPreferences", Context.MODE_PRIVATE).getString("sortfield","importance");
+
+        RadioButton rbHigh = findViewById(R.id.radioHigh);
+        RadioButton rbMed = findViewById(R.id.radioMed);
+        RadioButton rbLow = findViewById(R.id.radioLow);
+        if (sortBy.equalsIgnoreCase("low")) {
+            rbLow.setChecked(true);
+        }
+        else if (sortBy.equalsIgnoreCase("med")) {
+            rbMed.setChecked(true);
+        }
+        else {
+            rbHigh.setChecked(true);
+        }
 
     }
 
+    private void initSortByClick() {
+        RadioGroup rgSortBy = (RadioGroup) findViewById(R.id.radioGroupImp);
+        rgSortBy.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
 
+            @Override
+            public void onCheckedChanged(RadioGroup arg0, int arg1) {
+                RadioButton rbLow = findViewById(R.id.radioLow);
+                RadioButton rbMed = findViewById(R.id.radioMed);
+                if (rbLow.isChecked()) {
+                    getSharedPreferences("MyMemoPreferences", Context.MODE_PRIVATE).edit() .putString("sortfield", "low").commit();
+                }
+                else if (rbMed.isChecked()) {
+                    getSharedPreferences("MyMemoPreferences", Context.MODE_PRIVATE).edit().putString("sortfield", "med").commit();
+                }
+                else {
+                    getSharedPreferences("MyMemoPreferences", Context.MODE_PRIVATE).edit().putString("sortfield", "high").commit();
+                }
+            }
+        });
+    }
 
 
 
