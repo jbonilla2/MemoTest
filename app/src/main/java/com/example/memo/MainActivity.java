@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         this.listView = findViewById(R.id.listView);
         this.btnAdd = findViewById(R.id.btnAdd);
 
+
         this.btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,43 +62,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        /*initSettings();
-        initSortByClick();*/
-
-    }
-    /*
-    private void initSettings() {
-        String sortBy = getSharedPreferences("Memo", Context.MODE_PRIVATE).getString("sortfield","date");
-
-        RadioButton rbDate = (RadioButton) findViewById(R.id.radioDate);
-        RadioButton rbImp = (RadioButton) findViewById(R.id.radioImp);
-
-        if (sortBy.equalsIgnoreCase("date")) {
-            rbDate.setChecked(true);
-        }
-        else {
-            rbImp.setChecked(true);
-        }
     }
 
-    private void initSortByClick() {
-        RadioGroup rgSortBy = (RadioGroup) findViewById(R.id.radioGroupSort);
-        rgSortBy.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(RadioGroup arg0, int arg1) {
-                RadioButton rbDate = (RadioButton) findViewById(R.id.radioDate);
-                RadioButton rbImp = (RadioButton) findViewById(R.id.radioImp);
-                if (rbDate.isChecked()) {
-                    getSharedPreferences("Memo", Context.MODE_PRIVATE).edit() .putString("sortfield", "date").commit();
-                }
-                else {
-                    getSharedPreferences("Memo", Context.MODE_PRIVATE).edit().putString("sortfield", "importance").commit();
-                }
-            }
-        });
-    }
-    */
 
     @Override
     protected void onResume() {
@@ -120,7 +86,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onImportanceClicked() {
-        /* CLICKING THIS BUTTON SHOULD TRIGGER THE initSortBy METHOD */
+        /* CLICKING THIS BUTTON SHOULD TRIGGER THE initSortBy METHOD
+        * - add intent to link to button
+        * - get the level of importance thru sharedPrefs
+        * - sort them accordingly */
     }
 
     public void onAddClicked() {
