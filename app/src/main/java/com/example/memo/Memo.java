@@ -11,7 +11,7 @@ public class Memo implements Serializable {
     private int memoId;
     private Date date;
     private String text;
-    private String importance;
+    private int priority;
     private boolean fullDisplayed;
     private static DateFormat dateFormat = new SimpleDateFormat("MM-dd-yyy hh:mm:ss a");
 
@@ -24,12 +24,11 @@ public class Memo implements Serializable {
     }
 
 
-    public Memo(long time, String text) {
+    public Memo(long time, String text, int priority) {
         this.date = new Date(time);
-        /*this.importance = importance;*/
         this.text=text;
-        /*calendar = Calendar.getInstance();*/
-        /*dateStr = dateFormat.format(calendar.getTime());*/
+        this.priority = priority;
+
 
     }
 
@@ -42,12 +41,12 @@ public class Memo implements Serializable {
         this.memoId = memoId;
     }
 
-    public String getImportance() {
-        return importance;
+    public int getPriority() {
+        return priority;
     }
 
-    public void setImportance(String importance) {
-        this.importance = importance;
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 
     public long getTime() {

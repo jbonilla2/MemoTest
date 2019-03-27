@@ -24,9 +24,11 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private ListView listView;
     private Button btnAdd;
+    private Button btnImp;
+    private Button btnDate;
     private DBAccess databaseAccess;
     /*boolean isDeleting = false;*/
-    private List<Memo> memos;
+    private ArrayList<Memo> memos;
     MemoAdapter adapter;
 
     @Override
@@ -38,7 +40,8 @@ public class MainActivity extends AppCompatActivity {
 
         this.listView = findViewById(R.id.listView);
         this.btnAdd = findViewById(R.id.btnAdd);
-
+        this.btnImp = findViewById(R.id.btnImp);
+        this.btnDate = findViewById(R.id.btnDate);
 
         this.btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,6 +49,20 @@ public class MainActivity extends AppCompatActivity {
                 onAddClicked();
             }
         });
+
+        /*btnImp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onImportanceClicked();
+            }
+        });
+
+        btnDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onDateClicked();
+            }
+        });*/
 
         this.listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -69,27 +86,42 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        String sortBy = getSharedPreferences("Memo", Context.MODE_PRIVATE).getString("sortfield","memo");
+        String sortBy = getSharedPreferences("MyMemoPreferences", Context.MODE_PRIVATE).getString("sortfield", "importance");
+        String sortOrder = getSharedPreferences("MyMemoPreferences", Context.MODE_PRIVATE).getString("sortorder", "ASC");
 
         try {
-            databaseAccess.open();
-            this.memos = databaseAccess.getAllMemos();
-            databaseAccess.close();
+
+            if(sortBy.equalsIgnoreCase("date")) {
+                databaseAccess.open();
+                this.memos = databaseAccess.getAllMemos();
+                databaseAccess.close();
+            } else {
+                databaseAccess.open();
+                this.memos = databaseAccess.sortMemosByImp(sortBy, sortOrder);
+                databaseAccess.close();
+            }
+
             MemoAdapter adapter = new MemoAdapter(this, memos);
-            /*ListView listView = (ListView) findViewById(R.id.listView);
-            /*listView.setAdapter(adapter);listView.setAdapter(adapter);*/
             this.listView.setAdapter(adapter);
+
         }
         catch (Exception e) {
             Toast.makeText(this, "Error retrieving memos", Toast.LENGTH_LONG).show();
         }
     }
 
-    public void onImportanceClicked() {
-        /* CLICKING THIS BUTTON SHOULD TRIGGER THE initSortBy METHOD
-        * - add intent to link to button
-        * - get the level of importance thru sharedPrefs
-        * - sort them accordingly */
+    public void onImportanceClicked(Memo memo) {
+        String sortBy = getSharedPreferences("MyMemoPreferences", Context.MODE_PRIVATE).getString("sortfield", "priority");
+        String sortOrder = getSharedPreferences("MyMemoPreferences", Context.MODE_PRIVATE).getString("sortorder", "ASC");
+        databaseAccess.open();
+        databaseAccess.sortMemosByImp(sortBy, sortOrder);
+  //   this is where you insert the sort query in DB
+    }
+
+    public void onDateClicked(Memo memo) {
+        databaseAccess.open();
+        databaseAccess.getAllMemos();
+        //   this is where you insert the sort query in DB
     }
 
     public void onAddClicked() {
@@ -131,6 +163,8 @@ public class MainActivity extends AppCompatActivity {
             ImageView btnDelete = (ImageView) convertView.findViewById(R.id.btnDelete);
             TextView txtDate = (TextView) convertView.findViewById(R.id.txtDate);
             TextView txtMemo = (TextView) convertView.findViewById(R.id.txtMemo);
+            Button btnImp = (Button) convertView.findViewById(R.id.btnImp);
+            Button btnDate = (Button) convertView.findViewById(R.id.btnDate);
 
             final Memo memo = memos.get(position);
             memo.setFullDisplayed(false);
@@ -148,6 +182,21 @@ public class MainActivity extends AppCompatActivity {
                     onDeleteClicked(memo);
                 }
             });
+
+            btnImp.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onImportanceClicked(memo);
+                }
+            });
+
+            btnDate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onDateClicked(memo);
+                }
+            });
+
             return convertView;
         }
     }

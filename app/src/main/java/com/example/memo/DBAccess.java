@@ -1,9 +1,11 @@
 package com.example.memo;
 
+import android.accessibilityservice.AccessibilityService;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.view.LayoutInflater;
 
 import com.example.memo.Memo;
 
@@ -16,7 +18,6 @@ public class DBAccess {
     private SQLiteDatabase database;
     private DBHelper openHelper;
     private static volatile DBAccess instance;
-
     private DBAccess(Context context) {
         this.openHelper = new DBHelper(context);
     }
@@ -38,17 +39,100 @@ public class DBAccess {
         }
     }
 
-
     public void save(Memo memo) {
         ContentValues values = new ContentValues();
         values.put("date", memo.getTime());
         values.put("memo", memo.getText());
+        values.put("priority", memo.getPriority());
         /*values.put("importance", memo.getImportance());*/
         database.insert(DBHelper.TABLE, null, values);
     }
 
 
-    /*public boolean insertMemo(Memo memo) {
+    public void update(Memo memo) {
+        ContentValues values = new ContentValues();
+        values.put("date", new Date().getTime());
+        values.put("memo", memo.getText());
+        values.put("priority", memo.getPriority());
+        String date = Long.toString(memo.getTime());
+        database.update(DBHelper.TABLE, values, "date = ?", new String[]{date});
+    }
+
+
+   public void delete(Memo memo) {
+       String date = Long.toString(memo.getTime());
+       database.delete(DBHelper.TABLE, "date = ?", new String[]{date});
+   }
+
+
+    public ArrayList<Memo> getAllMemos() {
+
+        String q1 = "SELECT * From memo ORDER BY date DESC";
+        String q2 = "SELECT * From memo ORDER BY priority DESC";
+
+        ArrayList<Memo> memos = new ArrayList<Memo>();
+
+        try {
+            Memo newMemo;
+            Cursor cursor = database.rawQuery("SELECT * From memo ORDER BY date DESC", null);
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                long time = cursor.getLong(0);
+                String text = cursor.getString(1);
+                int priority = cursor.getInt(2);
+                memos.add(new Memo(time, text, priority));
+                cursor.moveToNext();
+
+            }
+            cursor.close();
+        }
+        catch (Exception e) {
+            memos = new ArrayList<Memo>();
+        }
+
+        return memos;
+    }
+
+    public ArrayList<Memo> sortMemosByImp(String sortField, String SortOrder) {
+
+        ArrayList<Memo> memos = new ArrayList<Memo>();
+
+        try {
+            Memo newMemo;
+            Cursor cursor = database.rawQuery("SELECT * From memo ORDER BY priority ASC", null);
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                long time = cursor.getLong(0);
+                String text = cursor.getString(1);
+                int priority = cursor.getInt(2);
+                memos.add(new Memo(time, text, priority));
+                cursor.moveToNext();
+
+            }
+            cursor.close();
+        }
+        catch (Exception e) {
+            memos = new ArrayList<Memo>();
+        }
+
+        return memos;
+    }
+
+
+
+   /*public boolean delete(int MemoId) {
+        boolean didDelete = false;
+
+        try {
+            didDelete = database.delete("memo", "_id=" + MemoId, null) > 0;
+        }
+        catch (Exception e) {
+            //Do nothing -return value already set to false
+        }
+        return didDelete;
+    }*/
+
+  /*public boolean insertMemo(Memo memo) {
         boolean didSucceed = false;
         try {
             ContentValues values = new ContentValues();
@@ -93,48 +177,6 @@ public class DBAccess {
         return didSucceedUpdate;
     }
     */
-    public void update(Memo memo) {
-        ContentValues values = new ContentValues();
-        values.put("date", new Date().getTime());
-        values.put("memo", memo.getText());
-        String date = Long.toString(memo.getTime());
-        database.update(DBHelper.TABLE, values, "date = ?", new String[]{date});
-    }
-
-
-
-   /*public boolean delete(int MemoId) {
-        boolean didDelete = false;
-
-        try {
-            didDelete = database.delete("memo", "_id=" + MemoId, null) > 0;
-        }
-        catch (Exception e) {
-            //Do nothing -return value already set to false
-        }
-        return didDelete;
-    }*/
-   public void delete(Memo memo) {
-       String date = Long.toString(memo.getTime());
-       database.delete(DBHelper.TABLE, "date = ?", new String[]{date});
-   }
-
-
-    public List getAllMemos() {
-        List memos = new ArrayList<>();
-        Cursor cursor = database.rawQuery("SELECT * From memo ORDER BY date DESC", null);
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            long time = cursor.getLong(0);
-            String text = cursor.getString(1);
-            memos.add(new Memo(time, text));
-            cursor.moveToNext();
-        }
-        cursor.close();
-        return memos;
-    }
-
-
    /* public ArrayList<Memo> getMemos(String sortField) {
         ArrayList<Memo> memos = new ArrayList<Memo>();
         try {
